@@ -44,11 +44,21 @@ open class MRCountryPicker: UIPickerView, UIPickerViewDelegate, UIPickerViewData
         if let code = Locale.current.languageCode {
             self.selectedLocale = Locale(identifier: code)
         }
-
+        
+        sortCountriesByLocalizedName()
+        
         super.dataSource = self
         super.delegate = self
     }
     
+    private func sortCountriesByLocalizedName() {
+        if let locale = selectedLocale {
+            countries.sort { (country1, country2) -> Bool in
+                guard let c1 = country1.code, let c2 = country2.code, let n1 = locale.localizedString(forRegionCode: c1), let n2 = locale.localizedString(forRegionCode: c2) else { return false }
+                return n1.localizedCaseInsensitiveCompare(n2) == .orderedAscending
+            }
+        }
+    }
     // MARK: - Locale Methods
 
     open func setLocale(_ locale: String) {
